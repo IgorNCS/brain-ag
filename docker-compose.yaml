@@ -1,0 +1,29 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak-brain
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    command: start-dev
+    networks:
+      - app_network
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres-brain
+    env_file:
+      - .env
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" 
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+
