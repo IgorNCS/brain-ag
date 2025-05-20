@@ -24,7 +24,7 @@ async function bootstrap() {
       'igor.ncsilva@hotmail.com',
     )
     .setVersion('1.0')
-    .addTag('pix-automatico')
+    .addTag('brain-agriculture')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
