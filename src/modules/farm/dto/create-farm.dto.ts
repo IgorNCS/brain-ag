@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateIf } from 'class-validator';
 import { User } from '../../user/entities/user.entity';
 
 export class CreateFarmDTO {
@@ -21,6 +21,7 @@ export class CreateFarmDTO {
   @ApiProperty({ example: 100.5 })
   @IsNumber()
   @IsNotEmpty()
+  @ValidateIf((o) => o.totalArea > o.arableArea + o.vegetationArea)
   totalArea: number;
 
   @ApiProperty({ example: 80.0 })
