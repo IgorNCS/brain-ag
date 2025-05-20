@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ClsModule } from 'nestjs-cls';
 import { CacheModule } from '@nestjs/cache-manager';
+import { UserModule } from './modules/user/user.module';
 
 
 @Module({
@@ -28,6 +29,7 @@ import { CacheModule } from '@nestjs/cache-manager';
       middleware: { mount: true },
       interceptor: { mount: false },
     }),
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],
