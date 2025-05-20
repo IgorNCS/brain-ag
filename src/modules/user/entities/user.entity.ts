@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
+import { Farm } from '../../farm/entities/farm.entity';
 
 export enum Role {
   ADMIN = 'admin',
@@ -34,13 +36,17 @@ export class User {
   cpfCnpj: number;
 
   @IsEnum(Role)
-  @Column({ type: 'enum', enum: Role,default: Role.COSTUMER })
+  @Column({ type: 'enum', enum: Role, default: Role.COSTUMER })
   @ApiProperty({ example: 'admin', enum: Role })
   role: Role;
 
   @Column('uuid', { unique: true, nullable: false })
   @ApiProperty({ example: 'e7d3c6c4-3b6d-4e7a-9eae-64c93f9f7f4f' })
   keycloakId: string;
+
+  @OneToMany(() => Farm, (Farm) => Farm.user, { nullable: true })
+  @JoinColumn({ name: 'farm_id', referencedColumnName: 'id' })
+  farms: Farm[];
 
   @CreateDateColumn()
   @ApiProperty({ example: '2025-05-20T14:30:00.000Z' })

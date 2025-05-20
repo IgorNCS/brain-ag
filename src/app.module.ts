@@ -8,6 +8,7 @@ import { ClsModule } from 'nestjs-cls';
 import { CacheModule } from '@nestjs/cache-manager';
 import { UserModule } from './modules/user/user.module';
 import { KeycloakUserMiddleware } from './keycloak/keycloakAuthGuard';
+import { FarmModule } from './modules/farm/farm.module';
 
 
 @Module({
@@ -30,7 +31,8 @@ import { KeycloakUserMiddleware } from './keycloak/keycloakAuthGuard';
       middleware: { mount: true },
       interceptor: { mount: false },
     }),
-    UserModule
+    UserModule,
+    FarmModule
   ],
   controllers: [AppController],
   providers: [AppService],
