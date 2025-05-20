@@ -1,7 +1,19 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RegisterDto } from './dto/register.dto';
-import { DecodedToken, keycloakResponse, LoginDto, LoginResponse } from './dto/login.dto';
+import {
+  DecodedToken,
+  keycloakResponse,
+  LoginDto,
+  LoginResponse,
+} from './dto/login.dto';
 import { ClsService } from 'nestjs-cls';
 import * as jwt from 'jsonwebtoken';
 import { decode } from 'punycode';
@@ -13,8 +25,9 @@ import { UserService } from '../modules/user/user.service';
 export class AuthService {
   constructor(
     private readonly configService: ConfigService,
-    private readonly userService:UserService,
     private readonly httpService: HttpService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
   ) {}
 
   async register(user: RegisterDto): Promise<string> {
@@ -53,7 +66,7 @@ export class AuthService {
 
       const locationHeader = response.headers.location;
       const userId = locationHeader.split('/').pop();
-      return userId
+      return userId;
     } catch (error) {
       throw new HttpException(
         error.response?.data || error.message,
@@ -89,7 +102,7 @@ export class AuthService {
       );
 
       const decoded = jwt.decode(data.access_token) as DecodedToken;
-      const user=await this.userService.loginUser(decoded.sub);
+      const user = await this.userService.loginUser(decoded.sub);
       return {
         success: true,
         access_token: data.access_token,
@@ -97,7 +110,7 @@ export class AuthService {
         expires_in: data.expires_in,
       };
     } catch (error) {
-      throw new UnauthorizedException('Credenciais inválidas'); 
+      throw new UnauthorizedException('Credenciais inválidas');
     }
   }
 
@@ -170,63 +183,70 @@ export class AuthService {
     }
   }
 
-  async updateUser(userId: string, updateData: Partial<RegisterDto>): Promise<void> {
+  async updateUser(
+    userId: string,
+    updateData: Partial<RegisterDto>,
+  ): Promise<void> {
     try {
-        const adminToken = await this.getAdminToken();
-        await firstValueFrom(
-            this.httpService.put(
-                `${process.env.KEYCLOAK_AUTH_SERVER_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users/${userId}`,
-                updateData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${adminToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                },
-            ).pipe(
-                catchError((error) => {
-                    throw error;
-                }),
-            )
-        );
-    } catch (error) {
-        throw new HttpException(
-            error.response?.data || error.message,
-            HttpStatus.BAD_REQUEST,
-        );
-    }
-}
-
-async softDeleteUser(userId: string): Promise<void> {
-  try {
       const adminToken = await this.getAdminToken();
       await firstValueFrom(
-          this.httpService.put(
-              `${process.env.KEYCLOAK_AUTH_SERVER_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users/${userId}`,
-              {
-                  enabled: false,
+        this.httpService
+          .put(
+            `${process.env.KEYCLOAK_AUTH_SERVER_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users/${userId}`,
+            updateData,
+            {
+              headers: {
+                Authorization: `Bearer ${adminToken}`,
+                'Content-Type': 'application/json',
               },
-              {
-                  headers: {
-                      Authorization: `Bearer ${adminToken}`,
-                      'Content-Type': 'application/json',
-                  },
-              },
-          ).pipe(
-              catchError((error) => {
-                  throw error;
-              }),
+            },
           )
+          .pipe(
+            catchError((error) => {
+              throw error;
+            }),
+          ),
       );
-  } catch (error) {
+    } catch (error) {
       throw new HttpException(
-          error.response?.data || error.message,
-          HttpStatus.BAD_REQUEST,
+        error.response?.data || error.message,
+        HttpStatus.BAD_REQUEST,
       );
+    }
   }
-}
 
-  private async getAdminToken():Promise<string> {
+  async softDeleteUser(userId: string): Promise<void> {
+    try {
+      const adminToken = await this.getAdminToken();
+      await firstValueFrom(
+        this.httpService
+          .put(
+            `${process.env.KEYCLOAK_AUTH_SERVER_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users/${userId}`,
+            {
+              enabled: false,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${adminToken}`,
+                'Content-Type': 'application/json',
+              },
+            },
+          )
+          .pipe(
+            catchError((error) => {
+              throw error;
+            }),
+          ),
+      );
+    } catch (error) {
+      throw new HttpException(
+        error.response?.data || error.message,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  private async getAdminToken(): Promise<string> {
     try {
       const response = await firstValueFrom(
         this.httpService
@@ -257,4 +277,3 @@ async softDeleteUser(userId: string): Promise<void> {
     }
   }
 }
-

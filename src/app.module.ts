@@ -9,6 +9,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { UserModule } from './modules/user/user.module';
 import { KeycloakUserMiddleware } from './keycloak/keycloakAuthGuard';
 import { FarmModule } from './modules/farm/farm.module';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -25,12 +26,13 @@ import { FarmModule } from './modules/farm/farm.module';
         return AppDataSource;
       },
     }),
-    CacheModule.register(),
+    // CacheModule.register(),
     ClsModule.forRoot({
       global: true,
       middleware: { mount: true },
       interceptor: { mount: false },
     }),
+    AuthModule,
     UserModule,
     FarmModule
   ],
