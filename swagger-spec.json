@@ -403,6 +403,301 @@
           "Farm"
         ]
       }
+    },
+    "/crop/{harvestId}": {
+      "post": {
+        "operationId": "CropController_create",
+        "parameters": [
+          {
+            "name": "harvestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCropDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Crop"
+        ]
+      }
+    },
+    "/crop": {
+      "get": {
+        "operationId": "CropController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number to be returned (starts at 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page (maximum 100)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaginationBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Crop"
+        ]
+      }
+    },
+    "/crop/{id}": {
+      "get": {
+        "operationId": "CropController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Crop"
+        ]
+      }
+    },
+    "/crop/{id}/status/{status}": {
+      "patch": {
+        "operationId": "CropController_changeStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Crop"
+        ]
+      }
+    },
+    "/harvest/{farmId}": {
+      "post": {
+        "operationId": "HarvestController_create",
+        "parameters": [
+          {
+            "name": "farmId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Harvest"
+        ]
+      }
+    },
+    "/harvest": {
+      "get": {
+        "operationId": "HarvestController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number to be returned (starts at 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page (maximum 100)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaginationBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Harvest"
+        ]
+      }
+    },
+    "/harvest/{id}": {
+      "get": {
+        "operationId": "HarvestController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Harvest"
+        ]
+      },
+      "patch": {
+        "operationId": "HarvestController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateHarvestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Harvest"
+        ]
+      }
+    },
+    "/harvest/{id}/status/{status}": {
+      "patch": {
+        "operationId": "HarvestController_changeStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStatusHarvestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Harvest"
+        ]
+      }
     }
   },
   "info": {
@@ -624,6 +919,11 @@
                 "farm"
               ]
             }
+          },
+          "entityFilters": {
+            "type": "object",
+            "description": "Additional fields of the entity for filtering. Ex: { \"plantedArea\": 100 }",
+            "additionalProperties": true
           }
         }
       },
@@ -653,6 +953,98 @@
           "vegetationArea": {
             "type": "number",
             "example": 20.5
+          }
+        }
+      },
+      "CreateCropDto": {
+        "type": "object",
+        "properties": {
+          "seed": {
+            "type": "string",
+            "example": "Milho"
+          },
+          "plantedArea": {
+            "type": "number",
+            "example": 20.5
+          },
+          "monthPlanted": {
+            "type": "number",
+            "example": 1
+          },
+          "yearPlanted": {
+            "type": "number",
+            "example": 2025
+          }
+        },
+        "required": [
+          "seed",
+          "plantedArea",
+          "monthPlanted",
+          "yearPlanted"
+        ]
+      },
+      "UpdateStatusHarvestDto": {
+        "type": "object",
+        "properties": {
+          "monthHarvested": {
+            "type": "number",
+            "example": 5,
+            "nullable": true,
+            "description": "Month when the harvest was harvested."
+          },
+          "yearHarvested": {
+            "type": "number",
+            "example": 2025,
+            "nullable": true,
+            "description": "Year when the harvest was harvested."
+          }
+        }
+      },
+      "UpdateHarvestDto": {
+        "type": "object",
+        "properties": {
+          "plantedArea": {
+            "type": "number",
+            "example": 20.5,
+            "description": "Total area of the farm that was harvested."
+          },
+          "enabledArea": {
+            "type": "number",
+            "example": 80
+          },
+          "status": {
+            "type": "string",
+            "example": "preparing_land",
+            "enum": [
+              "preparing_land",
+              "planted",
+              "growing",
+              "harvested",
+              "canceled"
+            ],
+            "description": "Status of the harvest."
+          },
+          "monthPlanted": {
+            "type": "number",
+            "example": 1,
+            "description": "Month when the harvest was planted."
+          },
+          "yearPlanted": {
+            "type": "number",
+            "example": 2025,
+            "description": "Year when the harvest was planted."
+          },
+          "monthHarvested": {
+            "type": "number",
+            "example": 5,
+            "nullable": true,
+            "description": "Month when the harvest was harvested."
+          },
+          "yearHarvested": {
+            "type": "number",
+            "example": 2025,
+            "nullable": true,
+            "description": "Year when the harvest was harvested."
           }
         }
       }

@@ -42,7 +42,7 @@ export class UserService {
         user.keycloakId = responseKeycloak;
         user.role = Role.COSTUMER;
         await manager.save(user);
-        return 'Usuario criado com sucesso';
+        return 'User created successfully';
       } catch (error) {
         throw error;
       }
@@ -52,7 +52,7 @@ export class UserService {
   async loginUser(sub: string) {
     try {
       const user = await this.getBySub(sub);
-      if (!user) throw new Error('Usuario não encontrado');
+      if (!user) throw new Error('User not found');
       this.set(user);
       return user;
     } catch (error) {
@@ -106,7 +106,7 @@ export class UserService {
 
         if (userLogged.id !== id && userLogged.role !== Role.ADMIN)
           throw new ForbiddenException(
-            'Você não tem permissão para atualizar este usuário',
+            'You do not have permission to update this user',
           );
 
         if (userLogged.role !== Role.ADMIN && updateUserDto.role)
@@ -121,7 +121,7 @@ export class UserService {
         );
         if (result.affected === 0)
           throw new InternalServerErrorException(
-            'Falha ao atualizar usuário no banco de dados',
+            'Failure to update user in the database',
           );
         return await this.getById(id);
       });
@@ -137,7 +137,7 @@ export class UserService {
 
         if (userLogged.id !== id && userLogged.role !== Role.ADMIN) {
           throw new ForbiddenException(
-            'Você não tem permissão para deletar este usuário',
+            'You do not have permission to delete this user',
           );
         }
 
@@ -152,7 +152,7 @@ export class UserService {
 
   async getById(id: string): Promise<User> {
     const user = await this.modelRepository.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('Usuario não encontrado');
+    if (!user) throw new NotFoundException('User not found');
     return user;
   }
   getBySub(sub: string) {
@@ -163,9 +163,9 @@ export class UserService {
   async get(): Promise<User> {
     try {
       const user = await this.clsService.get('user');
-      if (!user) throw new NotFoundException('Usuario não encontrado');
-      const userSaved = await this.modelRepository.findOne({ where: { keycloakId: user.sub } });
-      if (!userSaved) throw new NotFoundException('Usuario não encontrado');
+      if (!user) throw new NotFoundException('User not found');
+      const userSaved = await this.modelRepository.findOne({ where: { keycloakId: user.sub },relations: ['farms'] });
+      if (!userSaved) throw new NotFoundException('User not found');
       return userSaved;
     } catch (error) {
       throw error;
@@ -175,7 +175,7 @@ export class UserService {
   getAdmin():User {
     try {
       const user = this.clsService.get('user');
-      if (!user) throw new NotFoundException('Usuario não encontrado');
+      if (!user) throw new NotFoundException('User not found');
       if (user.role !== Role.ADMIN) throw new ForbiddenException();
       return user;
     } catch (error) {

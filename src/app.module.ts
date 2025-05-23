@@ -10,6 +10,8 @@ import { UserModule } from './modules/user/user.module';
 import { KeycloakUserMiddleware } from './keycloak/keycloakAuthGuard';
 import { FarmModule } from './modules/farm/farm.module';
 import { AuthModule } from './auth/auth.module';
+import { CropModule } from './modules/crop/crop.module';
+import { HarvestModule } from './modules/harvest/harvest.module';
 
 
 @Module({
@@ -34,7 +36,9 @@ import { AuthModule } from './auth/auth.module';
     }),
     AuthModule,
     UserModule,
-    FarmModule
+    FarmModule,
+    CropModule,
+    HarvestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

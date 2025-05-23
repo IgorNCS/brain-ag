@@ -60,7 +60,7 @@ export class FarmService {
   }
 
   async findAll(
-    paginationBody: PaginationBodyDTO,
+    paginationBody: PaginationBodyDTO<Farm>,
     paginationQuery: PaginationQueryDTO,
   ): Promise<FindAllResponseDTO<Farm>> {
     try {
@@ -100,6 +100,15 @@ export class FarmService {
           where[filter] = paginationBody[filter];
         }
       });
+
+      if (paginationBody.entityFilters) {
+        Object.keys(paginationBody.entityFilters).forEach((key) => {
+          const value = paginationBody.entityFilters?.[key];
+          if (value !== undefined && value !== null) {
+            where[key] = value;
+          }
+        });
+      }
 
       const options: FindManyOptions<Farm> = {
         relations: relations,

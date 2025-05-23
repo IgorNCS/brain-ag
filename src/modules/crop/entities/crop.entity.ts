@@ -7,50 +7,49 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
+import { CropStatus } from '../enums/crop-status.enum';
 import { Harvest } from '../../harvest/entities/harvest.entity';
 
 @Entity()
-export class Farm {
+export class Crop {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty({ example: 'e7d3c6c4-3b6d-4e7a-9eae-64c93f9f7f4f' })
   id: string;
 
   @Column()
-  @ApiProperty({ example: 'Colheita feliz' })
-  name: string;
-
-  @Column()
-  @ApiProperty({ example: 'New York' })
-  city: string;
-
-  @Column()
-  @ApiProperty({ example: 'NY' })
-  state: string;
-
-  @Column('float')
-  @ApiProperty({ example: 100.5 })
-  totalArea: number;
-
-  @Column('float')
-  @ApiProperty({ example: 80.0 })
-  arableArea: number;
+  @ApiProperty({ example: 'Milho' })
+  seed: string;
 
   @Column('float')
   @ApiProperty({ example: 20.5 })
-  vegetationArea: number;
+  plantedArea: number;
 
-  @ManyToOne(() => User, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
-  user: User;
+  @Column({ type: 'enum', enum: CropStatus, default: CropStatus.PLANTED })
+  @ApiProperty({ example: 'planted', enum: CropStatus })
+  status: CropStatus;
 
-  @OneToMany(() => Harvest, (Harvest) => Harvest.farm, { nullable: true })
+  @Column('int')
+  @ApiProperty({ example: 1 })
+  monthPlanted: number;
+
+  @Column('int')
+  @ApiProperty({ example: 2025 })
+  yearPlanted: number;
+
+  @Column('int', { nullable: true })
+  @ApiProperty({ example: 5, nullable: true })
+  monthHarvested?: number;
+  
+  @Column('int', { nullable: true })
+  @ApiProperty({ example: 2025, nullable: true })
+  yearHarvested?: number;
+
+  @ManyToOne(() => Harvest, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'harvest_id', referencedColumnName: 'id' })
-  harvest: Harvest[]|null;
+  harvest: Harvest;
 
   @CreateDateColumn()
   @ApiProperty({ example: '2025-05-20T14:30:00.000Z' })

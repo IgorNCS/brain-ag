@@ -29,7 +29,7 @@ export class FarmController {
 
   @Get()
   async findAll(
-    @Body() paginacaoBody: PaginationBodyDTO,
+    @Body() paginacaoBody: PaginationBodyDTO<Farm>,
     @Query() paginacaoQuery: PaginationQueryDTO,
   ): Promise<FindAllResponseDTO<Farm>> {
     return this.farmService.findAll(paginacaoBody, paginacaoQuery);

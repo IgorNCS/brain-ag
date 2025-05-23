@@ -36,7 +36,7 @@ export class PaginationQueryDTO {
   limit: number = 10;
 }
 
-export class PaginationBodyDTO {
+export class PaginationBodyDTO<Entity> {
   @ApiPropertyOptional({
     example: ['b7f0c5a0-0a1e-11ec-9621-0242ac130002'],
     description: 'Client Id.',
@@ -77,4 +77,13 @@ export class PaginationBodyDTO {
   @IsEnum(RelationsTypes, { each: true })
   @Transform(({ value }) => transformKeyToEnum(value, RelationsTypes))
   relations?: RelationsTypes[];
+
+  @ApiPropertyOptional({
+    description:
+      'Additional fields of the entity for filtering. Ex: { "plantedArea": 100 }',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  entityFilters?: Partial<Entity>;
 }

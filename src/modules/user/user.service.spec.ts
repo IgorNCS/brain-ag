@@ -4,13 +4,18 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, Between, Like } from 'typeorm';
 import { Role, User } from './entities/user.entity';
 import { AuthService } from '../../auth/auth.service';
-import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { RegisterDto } from '../../auth/dto/register.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { PaginationUserRequest } from './dto/request/findall-user.dto';
 import { UserResponseDTO } from './dto/response/user.response.dto';
 import { ClsService } from 'nestjs-cls';
+import { Farm } from '../farm/entities/farm.entity';
 
 describe('UserService', () => {
   let service: UserService;
@@ -18,8 +23,30 @@ describe('UserService', () => {
   let authService: AuthService;
   let clsService: ClsService;
 
-  const mockUser = { id: '1', name: 'Test User', email: 'test@example.com', role: Role.COSTUMER, keycloakId: '123', createdAt: new Date(), updatedAt: new Date(), deletedAt: null,companies: [], ownerCompanies: [] };
-  const mockAdmin = { id: '1', name: 'Test User', email: 'test@example.com', role: Role.ADMIN, keycloakId: '123', createdAt: new Date(), updatedAt: new Date(), deletedAt: null,companies:[], ownerCompanies: [] };
+  const mockUser = {
+    id: '1',
+    name: 'Test User',
+    email: 'test@example.com',
+    role: Role.COSTUMER,
+    keycloakId: '123',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+    cpfCnpj: 12345678901,
+    farms: [{} as Farm],
+  };
+  const mockAdmin = {
+    id: '1',
+    name: 'Test User',
+    email: 'test@example.com',
+    role: Role.ADMIN,
+    keycloakId: '123',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+    cpfCnpj: 12345678901,
+    farms: [{} as Farm],
+  };
   const mockUserRepository = () => ({
     manager: { transaction: jest.fn() },
     save: jest.fn(),
@@ -66,7 +93,7 @@ describe('UserService', () => {
         name: 'Test User',
         email: 'test@example.com',
         password: 'password123',
-        cpfCnpj:12344567890,
+        cpfCnpj: 12344567890,
       };
       const registerDto: RegisterDto = {
         username: createUserDto.name,
@@ -84,7 +111,7 @@ describe('UserService', () => {
 
       expect(authService.register).toHaveBeenCalledWith(registerDto);
       expect(userRepository.manager.transaction).toHaveBeenCalled();
-      expect(result).toEqual('This action adds a new user');
+      expect(result).toEqual('User created successfully');
     });
 
     it('should throw an error if registration fails', async () => {
@@ -92,15 +119,19 @@ describe('UserService', () => {
         name: 'Test User',
         email: 'test@example.com',
         password: 'password123',
-        cpfCnpj:12344567890,
+        cpfCnpj: 12344567890,
       };
 
-      (authService.register as jest.Mock).mockRejectedValue(new Error('Registration failed'));
+      (authService.register as jest.Mock).mockRejectedValue(
+        new Error('Registration failed'),
+      );
       (userRepository.manager.transaction as jest.Mock).mockImplementation(
         (callback) => callback({ save: jest.fn() }),
       );
 
-      await expect(service.create(createUserDto)).rejects.toThrow('Registration failed');
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        'Registration failed',
+      );
     });
   });
 
@@ -118,7 +149,10 @@ describe('UserService', () => {
       const users: User[] = [mockUser];
       const total = 1;
 
-      (userRepository.findAndCount as jest.Mock).mockResolvedValue([users, total]);
+      (userRepository.findAndCount as jest.Mock).mockResolvedValue([
+        users,
+        total,
+      ]);
       (clsService.get as jest.Mock).mockReturnValue({ role: Role.ADMIN });
 
       const result: UserResponseDTO = await service.findAll(query);
@@ -132,7 +166,6 @@ describe('UserService', () => {
         },
         take: query.limit,
         skip: 0,
-        relations: ['companies'],
       });
 
       expect(result).toEqual({
@@ -150,7 +183,6 @@ describe('UserService', () => {
       };
       (clsService.get as jest.Mock).mockReturnValue({ role: Role.COSTUMER });
       await expect(service.findAll(query)).rejects.toThrow(ForbiddenException);
-
     });
   });
 
@@ -164,12 +196,19 @@ describe('UserService', () => {
       (userRepository.findOne as jest.Mock).mockResolvedValue(user);
       (authService.updateUser as jest.Mock).mockResolvedValue(undefined);
       (userRepository.manager.transaction as jest.Mock).mockImplementation(
-        (callback) => callback({ update: jest.fn().mockResolvedValue({ affected: 1 }), findOne: jest.fn().mockResolvedValue(user) }),
+        (callback) =>
+          callback({
+            update: jest.fn().mockResolvedValue({ affected: 1 }),
+            findOne: jest.fn().mockResolvedValue(user),
+          }),
       );
 
       const result = await service.update(id, updateUserDto);
 
-      expect(authService.updateUser).toHaveBeenCalledWith(user.keycloakId, updateUserDto);
+      expect(authService.updateUser).toHaveBeenCalledWith(
+        user.keycloakId,
+        updateUserDto,
+      );
       expect(result).toEqual(user);
     });
 
@@ -180,10 +219,16 @@ describe('UserService', () => {
       (clsService.get as jest.Mock).mockReturnValue(mockUser);
       (userRepository.findOne as jest.Mock).mockResolvedValue(mockUser);
       (userRepository.manager.transaction as jest.Mock).mockImplementation(
-        (callback) => callback({ update: jest.fn(), findOne: jest.fn().mockResolvedValue(mockUser) }),
+        (callback) =>
+          callback({
+            update: jest.fn(),
+            findOne: jest.fn().mockResolvedValue(mockUser),
+          }),
       );
 
-      await expect(service.update(id, updateUserDto)).rejects.toThrow(ForbiddenException);
+      await expect(service.update(id, updateUserDto)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should throw InternalServerErrorException if update fails', async () => {
@@ -195,10 +240,16 @@ describe('UserService', () => {
       (userRepository.findOne as jest.Mock).mockResolvedValue(user);
       (authService.updateUser as jest.Mock).mockResolvedValue(undefined);
       (userRepository.manager.transaction as jest.Mock).mockImplementation(
-        (callback) => callback({ update: jest.fn().mockResolvedValue({ affected: 0 }), findOne: jest.fn().mockResolvedValue(user) }),
+        (callback) =>
+          callback({
+            update: jest.fn().mockResolvedValue({ affected: 0 }),
+            findOne: jest.fn().mockResolvedValue(user),
+          }),
       );
 
-      await expect(service.update(id, updateUserDto)).rejects.toThrow(InternalServerErrorException);
+      await expect(service.update(id, updateUserDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 
@@ -228,7 +279,7 @@ describe('UserService', () => {
       );
 
       await expect(service.remove(id)).rejects.toThrow(ForbiddenException);
-    })
+    });
   });
 
   describe('getById', () => {
@@ -259,19 +310,34 @@ describe('UserService', () => {
       (userRepository.findOne as jest.Mock).mockResolvedValue(user);
       const result = await service.getBySub(sub);
       expect(result).toEqual(user);
-    })
-  })
+    });
+  });
   describe('get', () => {
     it('should get the user from clsService', async () => {
+      // Make this test async
       const user: User = mockUser;
-      (clsService.get as jest.Mock).mockReturnValue(user);
-      const result = service.get();
+      (clsService.get as jest.Mock).mockReturnValue({
+        sub: user.keycloakId,
+        ...user,
+      }); // Mock the sub property for consistency
+      (userRepository.findOne as jest.Mock).mockResolvedValue(user); // Add this mock
+      const result = await service.get(); // Await the call
       expect(result).toEqual(user);
     });
 
     it('should throw NotFoundException if user is not found in clsService', async () => {
       (clsService.get as jest.Mock).mockReturnValue(undefined);
-      expect(() => service.get()).toThrow(NotFoundException);
+      await expect(service.get()).rejects.toThrow(NotFoundException); // Await the rejection
+    });
+
+    it('should throw NotFoundException if user is not found in repository', async () => {
+      const user: User = mockUser;
+      (clsService.get as jest.Mock).mockReturnValue({
+        sub: user.keycloakId,
+        ...user,
+      });
+      (userRepository.findOne as jest.Mock).mockResolvedValue(undefined); // Mock findOne to return undefined
+      await expect(service.get()).rejects.toThrow(NotFoundException);
     });
   });
   describe('getAdmin', () => {
@@ -280,11 +346,11 @@ describe('UserService', () => {
       (clsService.get as jest.Mock).mockReturnValue(user);
       const result = service.getAdmin();
       expect(result).toEqual(user);
-    })
+    });
     it('Should throw a Forbidden exception when the user is not an admin', async () => {
       const user: User = mockUser;
       (clsService.get as jest.Mock).mockReturnValue(user);
       expect(() => service.getAdmin()).toThrow(ForbiddenException);
-    })
-  })
+    });
+  });
 });

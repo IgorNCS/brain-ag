@@ -128,6 +128,7 @@ describe('FarmService', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           deletedAt: null,
+          harvest:null,
           user: new User(),
         },
         {
@@ -141,6 +142,7 @@ describe('FarmService', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           deletedAt: null,
+          harvest:null,
           user: new User(),
         },
       ];
@@ -176,6 +178,7 @@ describe('FarmService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
+        harvest:null,
         user: new User(),
       };
 
@@ -223,6 +226,7 @@ describe('FarmService', () => {
         updatedAt: new Date(),
         deletedAt: null,
         user: new User(),
+        harvest:null,
       };
 
       jest.spyOn(farmRepository, 'findOne').mockResolvedValue(farm);
@@ -259,6 +263,7 @@ describe('FarmService', () => {
         updatedAt: new Date(),
         deletedAt: null,
         user: new User(),
+        harvest:null,
       };
 
       const user = new User();
